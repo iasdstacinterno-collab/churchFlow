@@ -13,14 +13,6 @@ export default async function DepartmentsPage() {
 
   const { data: profile } = await supabase.from('profiles').select('church_id, role').eq('id', user.id).single()
 
-  if (profile?.role !== 'church_manager' && profile?.role !== 'department_leader' && profile?.role !== 'global_admin') {
-    return (
-      <div className="flex h-screen items-center justify-center bg-muted/20">
-        <h1 className="text-2xl font-bold text-destructive">Acesso negado</h1>
-      </div>
-    )
-  }
-
   let activeChurchId = profile?.church_id
   if (profile?.role === 'global_admin') {
     const cookieStore = await cookies()
@@ -28,12 +20,32 @@ export default async function DepartmentsPage() {
   }
 
   let query = supabase.from('departments').select('*, leader:profiles(name)')
-  if (activeChurchId) {
-      query = query.eq('church_id', activeChurchId)
-  }
-  if (profile.role === 'department_leader') {
-      // department_leader initially only sees their own assigned departments
-      query = query.eq('leader_id', user.id)
+  if (profile?.role === 'global_admin' || profile?.role === 'church_manager') {
+      if (activeChurchId) query = query.eq('church_id', activeChurchId)
+  } else {
+      const { data: myMembers } = await supabase.from('members').select('id').eq('user_id', user.id)
+      const myMemberIds = myMembers?.map((m: any) => m.id) || []
+
+      if (myMemberIds.length > 0) {
+         const { data: dm } = await supabase.from('department_members').select('department_id').in('member_id', myMemberIds)
+         let allowedDeptIds = dm?.map((x: any) => x.department_id) || []
+         
+         if (profile?.role === 'department_leader') {
+             const { data: dl } = await supabase.from('departments').select('id').eq('leader_id', user.id)
+             const leaderIds = dl?.map((x: any) => x.id) || []
+             allowedDeptIds = [...allowedDeptIds, ...leaderIds]
+         }
+         
+         if (allowedDeptIds.length > 0) {
+            query = query.in('id', allowedDeptIds)
+         } else {
+            query = query.in('id', ['00000000-0000-0000-0000-000000000000'])
+         }
+      } else if (profile?.role === 'department_leader') {
+         query = query.eq('leader_id', user.id)
+      } else {
+         query = query.in('id', ['00000000-0000-0000-0000-000000000000'])
+      }
   }
   const { data: departments } = await query
 
@@ -50,7 +62,7 @@ export default async function DepartmentsPage() {
            <h1 className="text-2xl font-bold tracking-tight text-primary">Departamentos</h1>
            <p className="text-sm text-muted-foreground mt-1">Gerencie os departamentos da igreja</p>
         </div>
-        {(profile.role === 'church_manager' || profile.role === 'global_admin' || profile.role === 'department_leader') && (
+        {(profile?.role === 'church_manager' || profile?.role === 'global_admin' || profile?.role === 'department_leader') && (
           <CreateDepartmentForm users={users} />
         )}
       </header>
@@ -68,7 +80,7 @@ export default async function DepartmentsPage() {
                 </span>
                 <div className="flex gap-2 items-center">
                   <a href={`/departments/${dept.id}`} className="text-sm font-semibold text-primary hover:underline px-3 hidden sm:block">Ver membros &rarr;</a>
-                  {profile.role === 'church_manager' || profile.role === 'global_admin' ? (
+                  {profile?.role === 'church_manager' || profile?.role === 'global_admin' ? (
                     <>
                       <EditDepartmentModal id={dept.id} currentName={dept.name} currentLeaderId={dept.leader_id} users={users || []} />
                       <DeleteDepartmentModal id={dept.id} name={dept.name} />

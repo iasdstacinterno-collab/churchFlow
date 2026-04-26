@@ -25,6 +25,16 @@ export default async function MembersPage() {
     )
   }
 
+  const canManageMembers = profile?.role === 'global_admin' || profile?.role === 'church_manager' || profile?.role === 'department_leader'
+
+  if (!canManageMembers) {
+    return (
+      <div className="flex h-full items-center justify-center p-6 bg-card text-center text-muted-foreground rounded-lg border shadow-sm">
+        <p>Acesso restrito. Apenas gerentes e líderes podem gerenciar membros.</p>
+      </div>
+    )
+  }
+
   const { data: members } = await supabase.from('members').select('*').eq('church_id', activeChurchId).order('name')
 
   return (

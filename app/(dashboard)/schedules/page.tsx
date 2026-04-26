@@ -24,11 +24,30 @@ export default async function SchedulesPage({ searchParams }: { searchParams: Pr
 
   // Find all departments user can view to populate the selector
   let deptQuery = supabase.from('departments').select('id, name, leader_id')
-  if (activeChurchId) {
-      deptQuery = deptQuery.eq('church_id', activeChurchId)
-  }
-  if (profile?.role === 'department_leader') {
-      deptQuery = deptQuery.eq('leader_id', user.id)
+  
+  if (profile?.role === 'global_admin' || profile?.role === 'church_manager') {
+      if (activeChurchId) deptQuery = deptQuery.eq('church_id', activeChurchId)
+  } else {
+      const { data: myMembers } = await supabase.from('members').select('id').eq('user_id', user.id)
+      const myMemberIds = myMembers?.map((m: any) => m.id) || []
+      
+      if (myMemberIds.length > 0) {
+         const { data: dm } = await supabase.from('department_members').select('department_id').in('member_id', myMemberIds)
+         let allowedDeptIds = dm?.map((x: any) => x.department_id) || []
+         
+         if (profile?.role === 'department_leader') {
+             const { data: dl } = await supabase.from('departments').select('id').eq('leader_id', user.id)
+             const leaderIds = dl?.map((x: any) => x.id) || []
+             allowedDeptIds = [...allowedDeptIds, ...leaderIds]
+         }
+         
+         if (allowedDeptIds.length > 0) deptQuery = deptQuery.in('id', allowedDeptIds)
+         else deptQuery = deptQuery.in('id', ['00000000-0000-0000-0000-000000000000'])
+      } else if (profile?.role === 'department_leader') {
+         deptQuery = deptQuery.eq('leader_id', user.id)
+      } else {
+         deptQuery = deptQuery.in('id', ['00000000-0000-0000-0000-000000000000'])
+      }
   }
   const { data: departments } = await deptQuery
 
@@ -43,15 +62,34 @@ export default async function SchedulesPage({ searchParams }: { searchParams: Pr
   const selectedDeptId = department_id || departments[0].id
   const selectedDept = departments.find((d: any) => d.id === selectedDeptId) || departments[0];
 
-  const amILeader = selectedDept.leader_id === user.id || profile?.role === 'global_admin' || profile?.role === 'church_manager'; // RLS will strict limit leader but manager can't edit unless specified by RLS. Prompt says "Apenas líder do departamento pode editar". RLS allows manager? Oh wait, RLS for schedules was 'global_admin' and 'leader_all'. So manager cannot edit! amILeader should track RLS.
-  // We'll just define amILeader solely for UI visibility, RLS actually rejects manager if they try to edit unless they are the leader or admin.
-  const canEdit = selectedDept.leader_id === user.id || profile?.role === 'global_admin';
+  const amILeader = selectedDept.leader_id === user.id || profile?.role === 'global_admin' || profile?.role === 'church_manager'; 
+  const canEdit = selectedDept.leader_id === user.id || profile?.role === 'global_admin' || profile?.role === 'church_manager';
 
   // Load schedules
-  const { data: schedules } = await supabase.from('schedules').select(`
+  let schedQuery = supabase.from('schedules').select(`
     *,
     assignments:schedule_assignments(*, member:members(name))
   `).eq('department_id', selectedDeptId).order('date', { ascending: true })
+
+  // If user is common member, filter out schedules they are NOT in
+  if (!amILeader) {
+       const { data: myMembers } = await supabase.from('members').select('id').eq('user_id', user.id)
+       const myMemberIds = myMembers?.map((m: any) => m.id) || []
+       
+       if (myMemberIds.length > 0) {
+           const { data: myAssignments } = await supabase.from('schedule_assignments').select('schedule_id').in('member_id', myMemberIds)
+           const myScheduleIds = myAssignments?.map((a: any) => a.schedule_id) || []
+           if (myScheduleIds.length > 0) {
+               schedQuery = schedQuery.in('id', myScheduleIds)
+           } else {
+               schedQuery = schedQuery.in('id', ['00000000-0000-0000-0000-000000000000'])
+           }
+       } else {
+           schedQuery = schedQuery.in('id', ['00000000-0000-0000-0000-000000000000'])
+       }
+  }
+
+  const { data: schedules } = await schedQuery
 
   // Members for dropdown
   const { data: members } = await supabase.from('department_members').select('member_id, member:members(name)').eq('department_id', selectedDeptId)

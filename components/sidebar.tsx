@@ -3,18 +3,23 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { LayoutDashboard, Building2, Users, Calendar, Component, UserCog } from 'lucide-react'
+import { LayoutDashboard, Building2, Users, Calendar, Component, UserCog, Contact, Church, CalendarDays } from 'lucide-react'
 
-export function Sidebar({ isAdmin }: { isAdmin: boolean }) {
+export function Sidebar({ role }: { role: string | null | undefined }) {
   const pathname = usePathname()
   
+  const isAdmin = role === 'global_admin'
+  const isManager = role === 'church_manager' || isAdmin
+  const isLeader = role === 'department_leader' || isManager
+
   const links = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    ...(isAdmin ? [{ name: 'Igrejas', href: '/churches', icon: Building2 }] : []),
     ...(isAdmin ? [{ name: 'Acesso / Logins', href: '/users', icon: UserCog }] : []),
-    { name: 'Membros', href: '/members', icon: Users },
-    { name: 'Departamentos', href: '/departments', icon: Component },
-    { name: 'Escalas', href: '/schedules', icon: Calendar },
+    ...(isLeader ? [{ name: 'Membros', href: '/members', icon: Users }] : []),
+    ...(isAdmin ? [{ name: 'Igrejas', href: '/churches', icon: Church }] : []),
+    ...(isLeader ? [{ name: 'Departamentos', href: '/departments', icon: Building2 }] : []),
+    { name: isLeader ? 'Escalas' : 'Minhas Escalas', href: '/schedules', icon: CalendarDays },
+    { name: 'Integrações', href: '/profile', icon: Contact },
   ]
   
   return (

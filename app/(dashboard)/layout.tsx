@@ -24,7 +24,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex min-h-screen bg-muted/20">
-       <Sidebar isAdmin={isGlobalAdmin} />
+       <Sidebar role={profile?.role} />
        <div className="flex-1 ml-64 flex flex-col min-h-screen">
           <Header profile={profile} churches={churches} activeChurchId={activeChurchId} />
           <main className="p-8 flex-1 overflow-y-auto">
