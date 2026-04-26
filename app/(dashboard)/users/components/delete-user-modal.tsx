@@ -18,7 +18,7 @@ export function DeleteUserModal({ id, name }: { id: string, name: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="destructive" size="sm"><Trash2 className="w-4 h-4" /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

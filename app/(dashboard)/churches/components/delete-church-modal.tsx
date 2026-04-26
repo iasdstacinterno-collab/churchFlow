@@ -18,7 +18,7 @@ export function DeleteChurchModal({ id, name }: { id: string, name: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10"><Trash2 className="w-4 h-4" /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

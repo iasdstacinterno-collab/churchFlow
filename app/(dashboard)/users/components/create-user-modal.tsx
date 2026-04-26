@@ -22,7 +22,7 @@ export function CreateUserModal({ isGlobalAdmin, churchId }: { isGlobalAdmin: bo
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button size="sm"><Plus className="w-4 h-4 mr-2" /> Novo Usuário</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

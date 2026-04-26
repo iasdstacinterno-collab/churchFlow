@@ -21,7 +21,7 @@ export function EditDepartmentModal({ id, currentName, currentLeaderId, users }:
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10"><Edit2 className="w-4 h-4" /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
