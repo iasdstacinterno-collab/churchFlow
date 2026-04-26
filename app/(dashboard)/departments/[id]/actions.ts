@@ -5,9 +5,9 @@ import { revalidatePath } from 'next/cache'
 
 export async function addMember(formData: FormData) {
   const department_id = formData.get('department_id') as string
-  const user_id = formData.get('user_id') as string
+  const member_id = formData.get('member_id') as string
 
-  if (!user_id || !department_id) return { error: 'Usuário inválido.' }
+  if (!member_id || !department_id) return { error: 'Membro inválido.' }
 
   const supabase = await createClient()
 
@@ -17,7 +17,7 @@ export async function addMember(formData: FormData) {
   // RLS covers correctness for `church_manager`, so we can attempt to insert directly
   const { error } = await supabase.from('department_members').insert({
     department_id,
-    user_id
+    member_id
   })
 
   if (error) {

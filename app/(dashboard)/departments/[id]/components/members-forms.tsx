@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { addMember, removeMember } from '../actions'
 import { Button } from '@/components/ui/button'
 
-export function AddMemberForm({ departmentId, users }: { departmentId: string, users: any[] }) {
+export function AddMemberForm({ departmentId, members }: { departmentId: string, members: any[] }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -24,10 +24,10 @@ export function AddMemberForm({ departmentId, users }: { departmentId: string, u
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 items-center mb-6">
-      <select name="user_id" required className="flex h-9 w-64 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" disabled={loading}>
+      <select name="member_id" required className="flex h-9 w-64 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" disabled={loading}>
         <option value="">Selecione um membro...</option>
-        {users.map(u => (
-          <option key={u.id} value={u.id}>{u.name || u.id} ({u.role})</option>
+        {members.map(m => (
+          <option key={m.id} value={m.id}>{m.name || m.id}</option>
         ))}
       </select>
       <Button type="submit" disabled={loading}>Adicionar Membro</Button>
