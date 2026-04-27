@@ -1,8 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { CreateDepartmentForm } from './components/create-department-form'
-import { EditDepartmentModal } from './components/edit-department-modal'
-import { DeleteDepartmentModal } from './components/delete-department-modal'
+import Link from 'next/link'
+import { Badge, Avatar, SectionHeader, FAB } from '@/components/ui-redesign'
+import { Building2, Users, Music, Heart, Utensils, Baby, GraduationCap, ChevronRight, Plus } from 'lucide-react'
 import { cookies } from 'next/headers'
 
 export default async function DepartmentsPage() {
@@ -12,86 +12,81 @@ export default async function DepartmentsPage() {
   if (!user) redirect('/')
 
   const { data: profile } = await supabase.from('profiles').select('church_id, role').eq('id', user.id).single()
+  
+  const cookieStore = await cookies()
+  const activeChurchId = profile?.role === 'global_admin' 
+    ? cookieStore.get('active_church_id')?.value 
+    : profile?.church_id
 
-  let activeChurchId = profile?.church_id
-  if (profile?.role === 'global_admin') {
-    const cookieStore = await cookies()
-    activeChurchId = cookieStore.get('active_church_id')?.value
+  const { data: departments } = await supabase.from('departments').select('*, leader:profiles(name)').eq('church_id', activeChurchId || '')
+
+  const getIcon = (name: string) => {
+    const n = name.toLowerCase()
+    if (n.includes('louvor') || n.includes('som') || n.includes('música')) return <Music className="w-5 h-5" />
+    if (n.includes('recepção') || n.includes('acolhimento')) return <Heart className="w-5 h-5" />
+    if (n.includes('infantil') || n.includes('crianças')) return <Baby className="w-5 h-5" />
+    if (n.includes('ensino') || n.includes('escola')) return <GraduationCap className="w-5 h-5" />
+    if (n.includes('social') || n.includes('alimento')) return <Utensils className="w-5 h-5" />
+    return <Building2 className="w-5 h-5" />
   }
 
-  let query = supabase.from('departments').select('*, leader:profiles(name)')
-  if (profile?.role === 'global_admin' || profile?.role === 'church_manager') {
-      if (activeChurchId) query = query.eq('church_id', activeChurchId)
-  } else {
-      const { data: myMembers } = await supabase.from('members').select('id').eq('user_id', user.id)
-      const myMemberIds = myMembers?.map((m: any) => m.id) || []
-
-      if (myMemberIds.length > 0) {
-         const { data: dm } = await supabase.from('department_members').select('department_id').in('member_id', myMemberIds)
-         let allowedDeptIds = dm?.map((x: any) => x.department_id) || []
-         
-         if (profile?.role === 'department_leader') {
-             const { data: dl } = await supabase.from('departments').select('id').eq('leader_id', user.id)
-             const leaderIds = dl?.map((x: any) => x.id) || []
-             allowedDeptIds = [...allowedDeptIds, ...leaderIds]
-         }
-         
-         if (allowedDeptIds.length > 0) {
-            query = query.in('id', allowedDeptIds)
-         } else {
-            query = query.in('id', ['00000000-0000-0000-0000-000000000000'])
-         }
-      } else if (profile?.role === 'department_leader') {
-         query = query.eq('leader_id', user.id)
-      } else {
-         query = query.in('id', ['00000000-0000-0000-0000-000000000000'])
-      }
-  }
-  const { data: departments } = await query
-
-  let users: any[] = []
-  if (activeChurchId) {
-      const { data } = await supabase.from('profiles').select('id, name, role').eq('church_id', activeChurchId)
-      users = data || []
+  const getCardColor = (name: string) => {
+    const n = name.toLowerCase()
+    if (n.includes('louvor')) return 'bg-purple-500/10 text-purple-500 border-purple-500/20'
+    if (n.includes('recepção')) return 'bg-rose-500/10 text-rose-500 border-rose-500/20'
+    if (n.includes('som')) return 'bg-blue-500/10 text-blue-500 border-blue-500/20'
+    if (n.includes('infantil')) return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+    return 'bg-primary/10 text-primary border-primary/20'
   }
 
   return (
-    <div className="max-w-6xl space-y-6">
-      <header className="flex justify-between items-center bg-card p-6 rounded-xl shadow-xs border">
-        <div>
-           <h1 className="text-2xl font-bold tracking-tight text-primary">Departamentos</h1>
-           <p className="text-sm text-muted-foreground mt-1">Gerencie os departamentos da igreja</p>
-        </div>
-        {(profile?.role === 'church_manager' || profile?.role === 'global_admin' || profile?.role === 'department_leader') && (
-          <CreateDepartmentForm users={users} />
-        )}
+    <div className="space-y-6 fade-in">
+      <header className="px-1">
+        <h1 className="text-2xl font-black tracking-tight">Departamentos</h1>
+        <p className="text-muted-foreground text-sm">Gerencie os departamentos da igreja.</p>
       </header>
 
-      <main className="bg-card p-6 rounded-xl shadow-xs border">
-        {departments?.length === 0 ? (
-          <p className="text-muted-foreground text-center">Nenhum departamento encontrado.</p>
+      {/* Primary Action Button */}
+      <button className="w-full indigo-gradient text-white py-4 rounded-3xl font-black text-sm shadow-lg shadow-indigo-500/20 active-scale flex items-center justify-center gap-2">
+        <Plus className="w-5 h-5" /> Novo Departamento
+      </button>
+
+      {/* Departments List */}
+      <div className="space-y-4">
+        {(!departments || departments.length === 0) ? (
+          <div className="text-center py-12 glass rounded-3xl border border-dashed">
+            <p className="text-muted-foreground">Nenhum departamento encontrado.</p>
+          </div>
         ) : (
-          <ul className="space-y-3">
-            {departments?.map((dept: any) => (
-              <li key={dept.id} className="flex justify-between items-center p-3 border rounded hover:border-primary transition-colors">
-                <span className="font-medium flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                   {dept.name} 
-                   <span className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground w-fit">Líder: {dept.leader?.name || 'Não definido'}</span>
-                </span>
-                <div className="flex gap-2 items-center">
-                  <a href={`/departments/${dept.id}`} className="text-sm font-semibold text-primary hover:underline px-3 hidden sm:block">Ver membros &rarr;</a>
-                  {profile?.role === 'church_manager' || profile?.role === 'global_admin' ? (
-                    <>
-                      <EditDepartmentModal id={dept.id} currentName={dept.name} currentLeaderId={dept.leader_id} users={users || []} />
-                      <DeleteDepartmentModal id={dept.id} name={dept.name} />
-                    </>
-                  ) : null}
+          departments.map((dept: any) => (
+            <Link key={dept.id} href={`/departments/${dept.id}`} className="block active-scale">
+              <div className={cn("glass p-5 rounded-3xl border flex items-center gap-4 shadow-sm", "border-l-4 " + getCardColor(dept.name).split(' ').pop())}>
+                <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center", getCardColor(dept.name).split(' ').slice(0,2).join(' '))}>
+                  {getIcon(dept.name)}
                 </div>
-              </li>
-            ))}
-          </ul>
+                
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-lg leading-tight">{dept.name}</h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Avatar fallback={dept.leader?.name || '?'} className="h-5 w-5 border-none" />
+                    <p className="text-xs text-muted-foreground truncate">
+                      Líder: <span className="text-foreground font-medium">{dept.leader?.name || 'Não definido'}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+            </Link>
+          ))
         )}
-      </main>
+      </div>
+
+      <FAB />
     </div>
   )
+}
+
+function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(' ')
 }

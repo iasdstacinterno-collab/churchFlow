@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { AddMemberForm } from './components/members-forms'
 import { DeleteMemberModal } from '../components/delete-member-modal'
 import { cookies } from 'next/headers'
@@ -53,7 +54,7 @@ export default async function DepartmentDetailsPage({ params }: { params: Promis
              <h1 className="text-2xl font-bold tracking-tight text-primary">{department.name}</h1>
              <p className="text-muted-foreground text-sm mt-1">Líder atual: {department.leader?.name || 'Não definido'}</p>
            </div>
-           <a href="/departments" className="text-sm font-semibold text-muted-foreground hover:underline">&larr; Voltar para Departamentos</a>
+           <Link href="/departments" className="text-sm font-semibold text-muted-foreground hover:underline">&larr; Voltar para Departamentos</Link>
         </div>
       </header>
 
@@ -79,7 +80,7 @@ export default async function DepartmentDetailsPage({ params }: { params: Promis
       <main className="bg-card p-6 rounded-xl shadow-xs border">
         <div className="flex justify-between border-b pb-2 mb-6">
            <h2 className="text-xl font-semibold">Escalas (Schedules)</h2>
-           <a href={`/schedules?department_id=${id}`} className="text-sm font-semibold text-primary hover:underline">Ir para Escalas &rarr;</a>
+           <Link href={`/schedules?department_id=${id}`} className="text-sm font-semibold text-primary hover:underline">Ir para Escalas &rarr;</Link>
         </div>
         <p className="text-muted-foreground text-sm">Gerenciamento de escalas é feito na aba global filtrada por departamento.</p>
       </main>

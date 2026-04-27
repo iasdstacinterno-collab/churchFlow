@@ -23,7 +23,7 @@ export function Sidebar({ role }: { role: string | null | undefined }) {
   ]
   
   return (
-    <aside className="w-64 bg-card border-r flex flex-col h-screen fixed left-0 top-0 z-10">
+    <aside className="hidden md:flex w-64 bg-card border-r flex-col h-screen fixed left-0 top-0 z-10">
       <div className="h-16 flex items-center px-6 border-b">
         <h1 className="text-xl font-bold tracking-tight text-primary">ChurchFlow</h1>
       </div>

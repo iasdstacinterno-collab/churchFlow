@@ -1,8 +1,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { Sidebar } from '@/components/sidebar'
-import { Header } from '@/components/header'
+import { TopBar } from '@/components/top-bar'
+import { BottomNav } from '@/components/bottom-nav'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -11,32 +11,28 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!user) redirect('/')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  const isGlobalAdmin = profile?.role === 'global_admin'
-
-  let churches: any[] = []
-  if (isGlobalAdmin) {
-     const { data } = await supabase.from('churches').select('id, name').order('name')
-     churches = data || []
-  }
-
+  
   const cookieStore = await cookies()
   const activeChurchId = cookieStore.get('active_church_id')?.value
 
+  // Fetch church name if activeChurchId exists
+  let activeChurchName = 'Igreja Interna'
+  if (activeChurchId) {
+    const { data } = await supabase.from('churches').select('name').eq('id', activeChurchId).single()
+    if (data) activeChurchName = data.name
+  }
+
   return (
-    <div className="flex min-h-screen bg-muted/20">
-       <Sidebar role={profile?.role} />
-       <div className="flex-1 ml-64 flex flex-col min-h-screen">
-          <Header profile={profile} churches={churches} activeChurchId={activeChurchId} />
-          <main className="p-8 flex-1 overflow-y-auto">
-            {isGlobalAdmin && !activeChurchId && churches.length > 0 ? (
-               <div className="flex h-full items-center justify-center p-6 bg-card text-center text-muted-foreground rounded-lg border shadow-sm">
-                  <p>Por favor, selecione uma igreja ativa no topo para continuar o acesso aos módulos (departamentos, usuários, escalas, etc).</p>
-               </div>
-            ) : (
-               children
-            )}
-          </main>
-       </div>
+    <div className="min-h-screen bg-background flex justify-center">
+      <div className="w-full max-w-md flex flex-col bg-background relative min-h-screen shadow-2xl shadow-indigo-500/10">
+        <TopBar churchName={activeChurchName} />
+        
+        <main className="flex-1 px-4 pt-6 pb-28">
+          {children}
+        </main>
+        
+        <BottomNav role={profile?.role} />
+      </div>
     </div>
   )
 }
