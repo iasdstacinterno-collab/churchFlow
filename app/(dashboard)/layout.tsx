@@ -1,8 +1,9 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { TopBar } from '@/components/top-bar'
-import { BottomNav } from '@/components/bottom-nav'
+import { TopBar } from '@/app/components/top-bar'
+import { BottomNav } from '@/app/components/bottom-nav'
+import { ChurchProvider } from '@/app/components/church-context'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -11,9 +12,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!user) redirect('/')
 
   const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-  
+
   const cookieStore = await cookies()
-  const activeChurchId = cookieStore.get('active_church_id')?.value
+  let activeChurchId = cookieStore.get('active_church_id')?.value || profile?.church_id
+
+  // If user is global_admin and has no active_church_id in cookie, we might want to default to the first one or leave null
 
   // Fetch church name if activeChurchId exists
   let activeChurchName = 'Igreja Interna'
@@ -23,16 +26,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   return (
-    <div className="min-h-screen bg-background flex justify-center">
-      <div className="w-full max-w-md flex flex-col bg-background relative min-h-screen shadow-2xl shadow-indigo-500/10">
-        <TopBar churchName={activeChurchName} />
-        
-        <main className="flex-1 px-4 pt-6 pb-28">
-          {children}
-        </main>
-        
-        <BottomNav role={profile?.role} />
+    <ChurchProvider initialChurchId={activeChurchId} userRole={profile?.role}>
+      <div className="min-h-screen bg-background flex justify-center">
+        <div className="w-full max-w-md flex flex-col bg-background relative min-h-screen shadow-2xl shadow-indigo-500/10">
+          <TopBar churchName={activeChurchName} userRole={profile?.role} />
+
+          <main className="flex-1 px-4 pt-6 pb-28">
+            {children}
+          </main>
+
+          <BottomNav role={profile?.role} />
+        </div>
       </div>
-    </div>
+    </ChurchProvider>
   )
 }

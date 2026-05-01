@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { createDepartment } from '../actions'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Button } from '@/app/components/ui/button'
+import { Input } from '@/app/components/ui/input'
 
 export function CreateDepartmentForm({ users }: { users: any[] }) {
   const [loading, setLoading] = useState(false)
@@ -15,11 +15,11 @@ export function CreateDepartmentForm({ users }: { users: any[] }) {
     setError('')
     const formData = new FormData(e.currentTarget)
     const result = await createDepartment(formData)
-    
+
     if (result?.error) {
       setError(result.error)
     } else {
-      ;(e.target as HTMLFormElement).reset()
+      ; (e.target as HTMLFormElement).reset()
     }
     setLoading(false)
   }

@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { cn } from '@/app/lib/utils'
 import { LayoutDashboard, Building2, Users, Calendar, Component, UserCog, Contact, Church, CalendarDays } from 'lucide-react'
 
 export function Sidebar({ role }: { role: string | null | undefined }) {
   const pathname = usePathname()
-  
+
   const isAdmin = role === 'global_admin'
   const isManager = role === 'church_manager' || isAdmin
   const isLeader = role === 'department_leader' || isManager
@@ -21,7 +21,7 @@ export function Sidebar({ role }: { role: string | null | undefined }) {
     { name: isLeader ? 'Escalas' : 'Minhas Escalas', href: '/schedules', icon: CalendarDays },
     { name: 'Integrações', href: '/profile', icon: Contact },
   ]
-  
+
   return (
     <aside className="hidden md:flex w-64 bg-card border-r flex-col h-screen fixed left-0 top-0 z-10">
       <div className="h-16 flex items-center px-6 border-b">
@@ -38,8 +38,8 @@ export function Sidebar({ role }: { role: string | null | undefined }) {
                 isActive ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-               <Icon className="w-5 h-5" />
-               {link.name}
+              <Icon className="w-5 h-5" />
+              {link.name}
             </Link>
           )
         })}

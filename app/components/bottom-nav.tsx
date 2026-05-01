@@ -2,20 +2,22 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { cn } from '@/app/lib/utils'
 import { Home, Calendar, Users, Building2, User } from 'lucide-react'
 
 export function BottomNav({ role }: { role: string | null | undefined }) {
   const pathname = usePathname()
-  
-  const links = [
+
+  const allLinks = [
     { name: 'Home', href: '/dashboard', icon: Home },
     { name: 'Escalas', href: '/schedules', icon: Calendar },
-    { name: 'Membros', href: '/members', icon: Users },
-    { name: 'Deptos', href: '/departments', icon: Building2 },
+    { name: 'Membros', href: '/members', icon: Users, roles: ['global_admin', 'church_manager', 'department_leader'] },
+    { name: 'Deptos', href: '/departments', icon: Building2, roles: ['global_admin', 'church_manager', 'department_leader'] },
     { name: 'Perfil', href: '/profile', icon: User },
   ]
-  
+
+  const links = allLinks.filter(link => !link.roles || (role && link.roles.includes(role)))
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t pb-safe">
       <div className="flex justify-around items-center h-20 max-w-md mx-auto px-2">

@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { removeMember } from '../[id]/actions' 
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Button } from '@/app/components/ui/button'
+import { removeMember } from '../[id]/actions'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/app/components/ui/dialog'
 import { Trash2 } from 'lucide-react'
 
 export function DeleteMemberModal({ id, name, department_id }: { id: string, name: string, department_id: string }) {
@@ -35,8 +35,8 @@ export function DeleteMemberModal({ id, name, department_id }: { id: string, nam
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
           <DialogFooter>
-             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-             <Button type="submit" variant="destructive">Confirmar</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button type="submit" variant="destructive">Confirmar</Button>
           </DialogFooter>
         </form>
       </DialogContent>

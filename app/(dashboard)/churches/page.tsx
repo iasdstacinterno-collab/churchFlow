@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { CreateChurchForm } from './components/create-church-form'
 import { EditChurchModal } from './components/edit-church-modal'
@@ -41,8 +41,8 @@ export default async function ChurchesPage() {
               <li key={church.id} className="flex justify-between items-center p-3 border rounded hover:bg-muted/30 transition-colors">
                 <span className="font-medium text-foreground">{church.name}</span>
                 <div className="flex gap-2">
-                   <EditChurchModal id={church.id} currentName={church.name} />
-                   <DeleteChurchModal id={church.id} name={church.name} />
+                  <EditChurchModal id={church.id} currentName={church.name} />
+                  <DeleteChurchModal id={church.id} name={church.name} />
                 </div>
               </li>
             ))}

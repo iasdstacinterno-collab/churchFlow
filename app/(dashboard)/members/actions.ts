@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
@@ -16,7 +16,7 @@ export async function createMember(formData: FormData) {
   if (!user) return { error: 'Não autorizado' }
 
   const { data: profile } = await supabase.from('profiles').select('church_id, role').eq('id', user.id).single()
-  
+
   let churchId = profile?.church_id
   if (profile?.role === 'global_admin') {
     const cookieStore = await cookies()
@@ -33,7 +33,7 @@ export async function createMember(formData: FormData) {
   })
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/members')
   return { success: true }
 }
@@ -49,13 +49,13 @@ export async function updateMember(formData: FormData) {
   const supabase = await createClient()
 
   const { error } = await supabase.from('members').update({
-     name, 
-     whatsapp: whatsapp || null, 
-     email: email || null 
+    name,
+    whatsapp: whatsapp || null,
+    email: email || null
   }).eq('id', id)
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/members')
   return { success: true }
 }
@@ -68,7 +68,7 @@ export async function deleteMember(formData: FormData) {
   const { error } = await supabase.from('members').delete().eq('id', id)
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/members')
   return { success: true }
 }

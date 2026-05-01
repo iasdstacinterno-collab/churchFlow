@@ -1,15 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from '@/app/components/ui/button'
+import { Input } from '@/app/components/ui/input'
+import { Label } from '@/app/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { updateDepartment } from '../actions'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/app/components/ui/dialog'
 import { Edit2 } from 'lucide-react'
 
-export function EditDepartmentModal({ id, currentName, currentLeaderId, users }: { id: string, currentName: string, currentLeaderId: string | null, users: any[] }) {
+export function EditDepartmentModal({ id, currentName, currentLeaderId, users, trigger }: { id: string, currentName: string, currentLeaderId: string | null, users: any[], trigger?: React.ReactElement }) {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
 
@@ -21,9 +21,11 @@ export function EditDepartmentModal({ id, currentName, currentLeaderId, users }:
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10"><Edit2 className="w-4 h-4" /></Button>
-      </DialogTrigger>
+      <DialogTrigger render={trigger || (
+        <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10">
+          <Edit2 className="w-4 h-4" />
+        </Button>
+      )} />
       <DialogContent className="sm:max-w-[425px]">
         <form action={onSubmit}>
           <input type="hidden" name="id" value={id} />

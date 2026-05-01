@@ -1,6 +1,7 @@
 import * as React from "react"
-import { cn } from "@/lib/utils"
+import { cn } from "@/app/lib/utils"
 import { Plus } from "lucide-react"
+import Link from 'next/link'
 
 // --- Badge ---
 interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -55,9 +56,11 @@ export function Avatar({ src, alt, fallback, className, ...props }: AvatarProps)
 }
 
 // --- FAB ---
-interface FABProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+interface FABProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  children?: React.ReactNode
+}
 
-export function FAB({ className, ...props }: FABProps) {
+export function FAB({ className, children, ...props }: FABProps) {
   return (
     <button
       className={cn(
@@ -66,7 +69,7 @@ export function FAB({ className, ...props }: FABProps) {
       )}
       {...props}
     >
-      <Plus className="h-6 w-6" />
+      {children || <Plus className="h-6 w-6" />}
     </button>
   )
 }
@@ -96,11 +99,12 @@ interface StatCardProps {
   value: string | number
   icon: React.ReactNode
   className?: string
+  href?: string
 }
 
-export function StatCard({ label, value, icon, className }: StatCardProps) {
-  return (
-    <div className={cn("p-4 rounded-2xl border bg-card/40 flex flex-col gap-3 shadow-sm active-scale", className)}>
+export function StatCard({ label, value, icon, className, href }: StatCardProps) {
+  const content = (
+    <>
       <div className="p-2 w-fit rounded-xl bg-primary/10 text-primary">
         {icon}
       </div>
@@ -108,6 +112,20 @@ export function StatCard({ label, value, icon, className }: StatCardProps) {
         <div className="text-2xl font-bold">{value}</div>
         <div className="text-xs text-muted-foreground font-medium">{label}</div>
       </div>
+    </>
+  )
+
+  if (href) {
+    return (
+      <Link href={href} className={cn("p-4 rounded-2xl border bg-card/40 flex flex-col gap-3 shadow-sm active-scale", className)}>
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <div className={cn("p-4 rounded-2xl border bg-card/40 flex flex-col gap-3 shadow-sm active-scale", className)}>
+      {content}
     </div>
   )
 }

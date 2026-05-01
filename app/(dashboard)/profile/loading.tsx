@@ -1,5 +1,5 @@
-import { SkeletonHeader } from "@/components/loading-ui"
-import { Skeleton } from "@/components/ui/skeleton"
+import { SkeletonHeader } from "@/app/components/loading-ui"
+import { Skeleton } from "@/app/components/ui/skeleton"
 
 export default function ProfileLoading() {
   return (
@@ -19,7 +19,7 @@ export default function ProfileLoading() {
             <Skeleton className="h-10 w-full" />
           </div>
         </div>
-        
+
         <div className="p-6 rounded-xl border bg-card space-y-4">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-20 w-full" />

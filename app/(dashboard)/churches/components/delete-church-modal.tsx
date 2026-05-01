@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/app/components/ui/button'
 import { deleteChurch } from '../actions'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/app/components/ui/dialog'
 import { Trash2 } from 'lucide-react'
 
 export function DeleteChurchModal({ id, name }: { id: string, name: string }) {
@@ -34,8 +34,8 @@ export function DeleteChurchModal({ id, name }: { id: string, name: string }) {
             {error && <p className="text-sm text-destructive font-medium bg-destructive/10 p-3 rounded">{error}</p>}
           </div>
           <DialogFooter>
-             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-             <Button type="submit" variant="destructive">Confirmar Exclusão</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button type="submit" variant="destructive">Confirmar Exclusão</Button>
           </DialogFooter>
         </form>
       </DialogContent>

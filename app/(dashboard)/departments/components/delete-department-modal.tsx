@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/app/components/ui/button'
 import { deleteDepartment } from '../actions'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/app/components/ui/dialog'
 import { Trash2 } from 'lucide-react'
 
-export function DeleteDepartmentModal({ id, name }: { id: string, name: string }) {
+export function DeleteDepartmentModal({ id, name, trigger }: { id: string, name: string, trigger?: React.ReactElement }) {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
 
@@ -18,9 +18,11 @@ export function DeleteDepartmentModal({ id, name }: { id: string, name: string }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10"><Trash2 className="w-4 h-4" /></Button>
-      </DialogTrigger>
+      <DialogTrigger render={trigger || (
+        <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10">
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      )} />
       <DialogContent className="sm:max-w-[425px]">
         <form action={onSubmit}>
           <input type="hidden" name="id" value={id} />
@@ -34,8 +36,8 @@ export function DeleteDepartmentModal({ id, name }: { id: string, name: string }
             {error && <p className="text-sm text-destructive font-medium bg-destructive/10 p-3 rounded">{error}</p>}
           </div>
           <DialogFooter>
-             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-             <Button type="submit" variant="destructive">Confirmar Exclusão</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button type="submit" variant="destructive">Confirmar Exclusão</Button>
           </DialogFooter>
         </form>
       </DialogContent>

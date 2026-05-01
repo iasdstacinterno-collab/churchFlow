@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
@@ -15,7 +15,7 @@ export async function createDepartment(formData: FormData) {
   if (!user) return { error: 'Não autorizado' }
 
   const { data: profile } = await supabase.from('profiles').select('church_id, role').eq('id', user.id).single()
-  
+
   let churchId = profile?.church_id
   if (profile?.role === 'global_admin') {
     const cookieStore = await cookies()
@@ -31,7 +31,7 @@ export async function createDepartment(formData: FormData) {
   })
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/departments')
   return { success: true }
 }
@@ -50,7 +50,7 @@ export async function updateDepartment(formData: FormData) {
   const { error } = await supabase.from('departments').update(payload).eq('id', id)
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/departments')
   revalidatePath(`/departments/${id}`)
   return { success: true }
@@ -64,7 +64,7 @@ export async function deleteDepartment(formData: FormData) {
   const { error } = await supabase.from('departments').delete().eq('id', id)
 
   if (error) return { error: 'Não foi possível excluir o departamento. Existem membros ou escalas atrelados a ele.' }
-  
+
   revalidatePath('/departments')
   return { success: true }
 }

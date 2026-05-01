@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/app/utils/supabase/client'
+import { Button } from '@/app/components/ui/button'
+import { Input } from '@/app/components/ui/input'
+import { Label } from '@/app/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
@@ -22,14 +22,14 @@ export function LoginForm() {
     setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-       setError(error.message)
+      setError(error.message)
     } else {
-       router.push('/dashboard')
-       router.refresh()
+      router.push('/dashboard')
+      router.refresh()
     }
     setLoading(false)
   }
-  
+
   const handleSignUp = async () => {
     setLoading(true)
     setError('')
@@ -69,11 +69,11 @@ export function LoginForm() {
           </div>
           {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
           <div className="flex gap-2">
-             <Button type="submit" disabled={loading} className="w-full">Entrar</Button>
-             <Button type="button" variant="outline" disabled={loading} className="w-full" onClick={handleSignUp}>Cadastrar</Button>
+            <Button type="submit" disabled={loading} className="w-full">Entrar</Button>
+            <Button type="button" variant="outline" disabled={loading} className="w-full" onClick={handleSignUp}>Cadastrar</Button>
           </div>
         </form>
-        
+
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />

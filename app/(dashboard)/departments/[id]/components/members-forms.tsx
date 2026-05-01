@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { addMember, removeMember } from '../actions'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/app/components/ui/button'
 
 export function AddMemberForm({ departmentId, members }: { departmentId: string, members: any[] }) {
   const [loading, setLoading] = useState(false)
@@ -15,10 +15,10 @@ export function AddMemberForm({ departmentId, members }: { departmentId: string,
     const formData = new FormData(e.currentTarget)
     formData.append('department_id', departmentId)
     const result = await addMember(formData)
-    
+
     if (result?.error) setError(result.error)
-    else ;(e.target as HTMLFormElement).reset()
-    
+    else; (e.target as HTMLFormElement).reset()
+
     setLoading(false)
   }
 

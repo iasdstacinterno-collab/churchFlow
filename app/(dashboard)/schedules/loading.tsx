@@ -1,5 +1,5 @@
-import { SkeletonHeader } from "@/components/loading-ui"
-import { Skeleton } from "@/components/ui/skeleton"
+import { SkeletonHeader } from "@/app/components/loading-ui"
+import { Skeleton } from "@/app/components/ui/skeleton"
 
 export default function SchedulesLoading() {
   return (

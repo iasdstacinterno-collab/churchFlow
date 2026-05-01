@@ -1,12 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from '@/app/components/ui/button'
+import { Input } from '@/app/components/ui/input'
+import { Label } from '@/app/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select"
 import { createProfile } from '../actions'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/app/components/ui/dialog'
 import { Plus } from 'lucide-react'
 
 export function CreateUserModal({ isGlobalAdmin, churchId }: { isGlobalAdmin: boolean, churchId: string }) {
@@ -46,7 +46,7 @@ export function CreateUserModal({ isGlobalAdmin, churchId }: { isGlobalAdmin: bo
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="password" className="text-right">Senha Temp.</Label>
-              <Input id="password" name="password" type="password" className="col-span-3" required minLength={6} placeholder="Ao menos 6 char"/>
+              <Input id="password" name="password" type="password" className="col-span-3" required minLength={6} placeholder="Ao menos 6 char" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="role" className="text-right">Cargo</Label>

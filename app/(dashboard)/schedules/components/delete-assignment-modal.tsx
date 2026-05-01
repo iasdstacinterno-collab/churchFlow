@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/app/components/ui/button'
 import { removeRole } from '../actions'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/app/components/ui/dialog'
 import { Trash2 } from 'lucide-react'
 
 export function DeleteAssignmentModal({ id, roleName }: { id: string, roleName: string }) {
@@ -34,8 +34,8 @@ export function DeleteAssignmentModal({ id, roleName }: { id: string, roleName: 
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
           <DialogFooter>
-             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-             <Button type="submit" variant="destructive">Remover</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button type="submit" variant="destructive">Remover</Button>
           </DialogFooter>
         </form>
       </DialogContent>

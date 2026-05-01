@@ -1,8 +1,8 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { Badge, Avatar, SectionHeader } from '@/components/ui-redesign'
+import { Badge, Avatar, SectionHeader } from '@/app/components/ui-redesign'
 import { Calendar, CheckCircle2, Shield, Mail, Copy, ExternalLink, LogOut, Bell, Globe } from 'lucide-react'
-import { LogoutButton } from '@/components/logout-button'
+import { LogoutButton } from '@/app/components/logout-button'
 import { SyncCalendarHandler } from './components/sync-calendar-handler'
 
 export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ syncing?: string }> }) {
@@ -95,7 +95,11 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
             {isConnected ? (
               <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px]">Conectado</Badge>
             ) : (
-              <button className="bg-primary/10 text-primary px-3 py-1.5 rounded-xl text-[10px] font-black">Conectar</button>
+              <form action="/auth/google-connect" method="GET">
+                <button type="submit" className="bg-primary/10 text-primary px-3 py-1.5 rounded-xl text-[10px] font-black hover:bg-primary/20 transition-colors active-scale">
+                  Conectar
+                </button>
+              </form>
             )}
           </div>
 
@@ -128,7 +132,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
 function ChevronRight({ className }: { className?: string }) {
   return (
     <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m9 18 6-6-6-6"/>
+      <path d="m9 18 6-6-6-6" />
     </svg>
   )
 }

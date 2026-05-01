@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from '@/app/components/ui/button'
+import { Input } from '@/app/components/ui/input'
+import { Label } from '@/app/components/ui/label'
 import { createMember, updateMember, deleteMember } from '../actions'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/app/components/ui/dialog'
 import { Trash2, Edit2, UserPlus } from 'lucide-react'
 
-export function CreateMemberModal() {
+export function CreateMemberModal({ trigger }: { trigger?: React.ReactElement }) {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
 
@@ -20,9 +20,11 @@ export function CreateMemberModal() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2">
-        <UserPlus className="w-4 h-4" /> Novo Membro
-      </DialogTrigger>
+      <DialogTrigger render={trigger || (
+        <Button variant="default" className="gap-2">
+          <UserPlus className="w-4 h-4" /> Novo Membro
+        </Button>
+      )} />
       <DialogContent className="sm:max-w-[425px]">
         <form action={onSubmit}>
           <DialogHeader>
@@ -52,7 +54,7 @@ export function CreateMemberModal() {
   )
 }
 
-export function EditMemberModal({ member }: { member: any }) {
+export function EditMemberModal({ member, trigger }: { member: any, trigger?: React.ReactElement }) {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
 
@@ -64,9 +66,11 @@ export function EditMemberModal({ member }: { member: any }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/10 text-primary h-10 w-10">
-        <Edit2 className="w-4 h-4" />
-      </DialogTrigger>
+      <DialogTrigger render={trigger || (
+        <Button variant="ghost" size="icon" className="text-primary">
+          <Edit2 className="w-4 h-4" />
+        </Button>
+      )} />
       <DialogContent className="sm:max-w-[425px]">
         <form action={onSubmit}>
           <input type="hidden" name="id" value={member.id} />
@@ -97,7 +101,7 @@ export function EditMemberModal({ member }: { member: any }) {
   )
 }
 
-export function DeleteMemberModal({ id, name }: { id: string, name: string }) {
+export function DeleteMemberModal({ id, name, trigger }: { id: string, name: string, trigger?: React.ReactElement }) {
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
 
@@ -109,9 +113,11 @@ export function DeleteMemberModal({ id, name }: { id: string, name: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-destructive/10 text-destructive h-10 w-10">
-        <Trash2 className="w-4 h-4" />
-      </DialogTrigger>
+      <DialogTrigger render={trigger || (
+        <Button variant="ghost" size="icon" className="text-destructive">
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      )} />
       <DialogContent className="sm:max-w-[425px]">
         <form action={onSubmit}>
           <input type="hidden" name="id" value={id} />
@@ -125,8 +131,8 @@ export function DeleteMemberModal({ id, name }: { id: string, name: string }) {
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
           <DialogFooter>
-             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-             <Button type="submit" variant="destructive">Confirmar</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+            <Button type="submit" variant="destructive">Confirmar</Button>
           </DialogFooter>
         </form>
       </DialogContent>

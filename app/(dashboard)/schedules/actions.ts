@@ -13,12 +13,22 @@ export async function createSchedule(formData: FormData) {
   if (!department_id || !event_type || !date) return { error: 'Dados inválidos' }
 
   const supabase = await createClient()
+
+  // Get church_id from department to satisfy RLS
+  const { data: dept } = await supabase.from('departments').select('church_id').eq('id', department_id).single()
+  if (!dept) return { error: 'Departamento não encontrado' }
+
   const { error } = await supabase.from('schedules').insert({
-    department_id, event_type, date, start_time, end_time
+    department_id,
+    event_type,
+    date,
+    start_time,
+    end_time,
+    church_id: dept.church_id
   })
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/schedules')
   revalidatePath(`/departments/${department_id}`)
   return { success: true }
@@ -39,7 +49,7 @@ export async function updateSchedule(formData: FormData) {
   }).eq('id', id)
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/schedules')
   return { success: true }
 }
@@ -52,7 +62,7 @@ export async function deleteSchedule(formData: FormData) {
   const { error } = await supabase.from('schedules').delete().eq('id', id)
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/schedules')
   return { success: true }
 }
@@ -66,12 +76,20 @@ export async function assignRole(formData: FormData) {
   if (!schedule_id || !role_name) return { error: 'Dados obrigatórios faltando' }
 
   const supabase = await createClient()
+
+  // Get church_id from schedule to satisfy RLS if column exists
+  const { data: schedule } = await supabase.from('schedules').select('church_id').eq('id', schedule_id).single()
+  if (!schedule) return { error: 'Escala não encontrada' }
+
   const { error } = await supabase.from('schedule_assignments').insert({
-    schedule_id, role_name, member_id: member_id || null
+    schedule_id,
+    role_name,
+    member_id: member_id || null,
+    church_id: schedule.church_id
   })
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/schedules')
   return { success: true }
 }
@@ -84,7 +102,7 @@ export async function removeRole(formData: FormData) {
   const { error } = await supabase.from('schedule_assignments').delete().eq('id', id)
 
   if (error) return { error: error.message }
-  
+
   revalidatePath('/schedules')
   return { success: true }
 }

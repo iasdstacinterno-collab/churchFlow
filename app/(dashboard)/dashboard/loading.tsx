@@ -1,4 +1,4 @@
-import { SkeletonCard, SkeletonHeader } from "@/components/loading-ui"
+import { SkeletonCard, SkeletonHeader } from "@/app/components/loading-ui"
 
 export default function DashboardLoading() {
   return (

@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 // Important note: Supabase auth.users can only be inserted by Admin API securely, BUT for MVP we can use signUp if we handle session persistence, or we can use admin auth API if we have SERVICE_ROLE_KEY.
@@ -29,12 +29,12 @@ export async function createProfile(formData: FormData) {
   // Use service role client if available, otherwise regular client which logs them in (annoying but works for demo).
   // NextJS server action shouldn't wipe session if we just use another supabase client instance? Actually `signUp` touches cookies if we use SSR client.
   // We'll just do `signUp` temporarily which is standard if no service role is provided.
-  const { data: newUserAuth, error: authError } = await supabase.auth.signUp({ 
-    email, 
-    password, 
+  const { data: newUserAuth, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
     options: {
-        data: { full_name: name } // Triggers the DB trigger to build the profile!
-    } 
+      data: { full_name: name } // Triggers the DB trigger to build the profile!
+    }
   })
 
   if (authError) return { error: authError.message }

@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/app/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { AddMemberForm } from './components/members-forms'
@@ -34,8 +34,8 @@ export default async function DepartmentDetailsPage({ params }: { params: Promis
   if (isManager) {
     let churchId = profile?.church_id;
     if (profile?.role === 'global_admin') {
-       const cookieStore = await cookies();
-       churchId = cookieStore.get('active_church_id')?.value;
+      const cookieStore = await cookies();
+      churchId = cookieStore.get('active_church_id')?.value;
     }
     const { data: churchMembers } = await supabase.from('members').select('id, name').eq('church_id', churchId)
     membersToSelect = churchMembers || []
@@ -50,17 +50,17 @@ export default async function DepartmentDetailsPage({ params }: { params: Promis
     <div className="max-w-6xl space-y-6">
       <header className="bg-card p-6 rounded-xl shadow-xs border space-y-2">
         <div className="flex justify-between items-start">
-           <div>
-             <h1 className="text-2xl font-bold tracking-tight text-primary">{department.name}</h1>
-             <p className="text-muted-foreground text-sm mt-1">Líder atual: {department.leader?.name || 'Não definido'}</p>
-           </div>
-           <Link href="/departments" className="text-sm font-semibold text-muted-foreground hover:underline">&larr; Voltar para Departamentos</Link>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-primary">{department.name}</h1>
+            <p className="text-muted-foreground text-sm mt-1">Líder atual: {department.leader?.name || 'Não definido'}</p>
+          </div>
+          <Link href="/departments" className="text-sm font-semibold text-muted-foreground hover:underline">&larr; Voltar para Departamentos</Link>
         </div>
       </header>
 
       <main className="bg-card p-6 rounded-xl shadow-xs border">
         <h2 className="text-xl font-semibold mb-6 border-b pb-2">Membros do Departamento</h2>
-        
+
         {isManager && <AddMemberForm departmentId={id} members={membersToSelect} />}
 
         {(!members || members.length === 0) ? (
@@ -76,11 +76,11 @@ export default async function DepartmentDetailsPage({ params }: { params: Promis
           </ul>
         )}
       </main>
-      
+
       <main className="bg-card p-6 rounded-xl shadow-xs border">
         <div className="flex justify-between border-b pb-2 mb-6">
-           <h2 className="text-xl font-semibold">Escalas (Schedules)</h2>
-           <Link href={`/schedules?department_id=${id}`} className="text-sm font-semibold text-primary hover:underline">Ir para Escalas &rarr;</Link>
+          <h2 className="text-xl font-semibold">Escalas (Schedules)</h2>
+          <Link href={`/schedules?department_id=${id}`} className="text-sm font-semibold text-primary hover:underline">Ir para Escalas &rarr;</Link>
         </div>
         <p className="text-muted-foreground text-sm">Gerenciamento de escalas é feito na aba global filtrada por departamento.</p>
       </main>

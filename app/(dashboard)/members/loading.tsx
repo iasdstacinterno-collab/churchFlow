@@ -1,4 +1,4 @@
-import { SkeletonList, SkeletonHeader } from "@/components/loading-ui"
+import { SkeletonList, SkeletonHeader } from "@/app/components/loading-ui"
 
 export default function MembersLoading() {
   return (
